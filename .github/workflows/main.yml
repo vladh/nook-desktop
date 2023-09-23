@@ -8,9 +8,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-windows:
 
     runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    strategy:
+      matrix:
+        node-version: [18.12.1]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: echo GH_TOKEN=${{ secrets.GITHUB_TOKEN }} > .env
+      - run: npm ci
+      - run: npm run lint
+
+  build-linux:
+
+    runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
